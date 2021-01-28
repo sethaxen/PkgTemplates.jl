@@ -19,7 +19,9 @@ matrix:
 {{/HAS_ALLOW_FAILURES}}
 branches:
   only:
-    - master
+    {{#BRANCH}}
+    - {{{BRANCH}}}
+    {{/BRANCH}}
     - /release-.*/
 notifications:
   - provider: Email

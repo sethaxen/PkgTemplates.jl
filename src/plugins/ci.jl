@@ -133,7 +133,7 @@ destination(::TravisCI) = ".travis.yml"
 
 badges(::TravisCI) = Badge(
     "Build Status",
-    "https://travis-ci.com/{{{USER}}}/{{{PKG}}}.jl.svg?branch=master",
+    "https://travis-ci.com/{{{USER}}}/{{{PKG}}}.jl.svg?branch={{{BRANCH}}}",
     "https://travis-ci.com/{{{USER}}}/{{{PKG}}}.jl",
 )
 
@@ -218,6 +218,7 @@ function view(p::AppVeyor, t::Template, pkg::AbstractString)
         "PKG" => pkg,
         "PLATFORMS" => platforms,
         "USER" => t.user,
+        "BRANCH" => default_branch(t),
         "VERSIONS" => versions,
     )
 end
@@ -307,13 +308,13 @@ destination(::GitLabCI) = ".gitlab-ci.yml"
 function badges(p::GitLabCI)
     ci = Badge(
         "Build Status",
-        "https://{{{HOST}}}/{{{USER}}}/{{{PKG}}}.jl/badges/master/pipeline.svg",
+        "https://{{{HOST}}}/{{{USER}}}/{{{PKG}}}.jl/badges/{{{BRANCH}}}/pipeline.svg",
         "https://{{{HOST}}}/{{{USER}}}/{{{PKG}}}.jl/pipelines",
     )
     cov = Badge(
         "Coverage",
-        "https://{{{HOST}}}/{{{USER}}}/{{{PKG}}}.jl/badges/master/coverage.svg",
-        "https://{{{HOST}}}/{{{USER}}}/{{{PKG}}}.jl/commits/master",
+        "https://{{{HOST}}}/{{{USER}}}/{{{PKG}}}.jl/badges/{{{BRANCH}}}/coverage.svg",
+        "https://{{{HOST}}}/{{{USER}}}/{{{PKG}}}.jl/commits/{{{BRANCH}}}",
     )
     return p.coverage ? [ci, cov] : [ci]
 end
@@ -325,6 +326,7 @@ function view(p::GitLabCI, t::Template, pkg::AbstractString)
         "HOST" => t.host,
         "PKG" => pkg,
         "USER" => t.user,
+        "BRANCH" => default_branch(t),
         "VERSION" => format_version(t.julia),
         "VERSIONS" => collect_versions(t, p.extra_versions),
     )
